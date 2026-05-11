@@ -39,6 +39,24 @@ def _build_chart():
         for row in range(ROWS)
     ]
 
+def get_sales():
+    cost_matrix = [[100, 75, 50, 100] for row in range(12)] #   Returns a 12 x 4 matrix of prices
+    sales = 0
+    for reservation in {(r["seatRow"], r["seatColumn"]) for r in databaseFunctions.get_seats_taken()}:
+        sales += cost_matrix[reservation[0]][reservation[1]]
+    print(sales)
+    return sales
+
+def generate_ticket(s1,s2):
+    result = ""
+    total = max(len(s1), len(s2))
+    for i in range(total):
+        if i < len(s1):
+            result += s1[i]
+        if i < len(s2):
+            result += s2[i]
+    return result
+
 @main_bp.route('/reservations', methods=['GET', 'POST'])
 def reservations():
     form = ReservationForm()
@@ -51,7 +69,7 @@ def reservations():
         if databaseFunctions.is_seat_taken(row, column):
             flash(f"Seat (row {row}, seat {column}) is already taken. Choose another.")
         else:
-            eticket = uuid.uuid4().hex[:10].upper()
+            eticket = generate_ticket(form.first_name.data, "INFOTC4320")
             databaseFunctions.add_reservation(passenger_name, row, column, eticket)
             flash(f"Reservation confirmed for {passenger_name}. E-Ticket: {eticket}")
             return redirect(url_for('main.reservations'))
