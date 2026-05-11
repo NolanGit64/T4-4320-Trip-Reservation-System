@@ -23,44 +23,38 @@ def index():
 def admin():
     try:
         form = LoginForm()
+        delete_form = DeleteForm()
+        username = None
+        password = None
+        admin = None
+        delete_id = None
         if request.method == "POST":
-            username = form.username.data
-            password = form.password.data
-
-            admin = databaseFunctions.validate_admin(username, password)
-
-            if admin:
-                flash("Login successful.")
-                return redirect(url_for('main.dashboard'))
+            if request.form.get('username') and request.form.get('password'):
+                username = request.form.get('username')
+                password = request.form.get('password')
+                admin = databaseFunctions.validate_admin(username, password)
+            elif request.form.get('delete_id'):
+                delete_id = request.form.get('delete_id')
             
-            return render_template('admin.html', form=form, err="Invalid username or password.")
+            if admin or delete_id:
+
+                if delete_id:
+                    databaseFunctions.delete_reservation(delete_id)
+                    flash(f"Reservation {delete_id} deleted.")
+                
+                reservations = databaseFunctions.get_reservations()
+                seating_chart_matrix = _build_chart()
+                total_sales = get_sales()
+                return render_template('admin.html', form=form, delete_form=delete_form, reservations=reservations, seating_chart_matrix=seating_chart_matrix, total_sales=total_sales)
+            else:
+                return render_template('admin.html', form=form, err="Invalid username or password.")
         
         return render_template('admin.html', form=form)
 
     except Exception as e:
         flash("ERROR: unexpected login failure")
-        print(f"{e}")
+        flash(f"{e}")
         return redirect(url_for('main.index'))
-    
-@main_bp.route('/dashboard', methods=['GET', 'POST'])
-def dashboard():
-    if request.method == "POST":
-        delete_id = request.form.get("delete_id")
-
-        if delete_id:
-            databaseFunctions.delete_reservation(delete_id)
-            flash(f"Reservation {delete_id} deleted.")
-            return redirect(url_for('main.dashboard'))
-        
-    reservations = databaseFunctions.get_reservations()
-    seating_chart_matrix = _build_chart()
-    total_sales = get_sales()
-    return render_template(
-        'dashboard.html',
-        reservations=reservations,
-        seating_chart_matrix=seating_chart_matrix,
-        total_sales=total_sales
-        )
 
 def _build_chart():
     taken = {(r["seatRow"], r["seatColumn"]) for r in databaseFunctions.get_seats_taken()}

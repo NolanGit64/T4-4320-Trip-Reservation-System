@@ -9,10 +9,9 @@
             <p>Choose Menu Option:</p>
 
             <form method="POST" action="{{ url_for('main.index') }}">
-
                 <select required name="menu_option">
                     <option value="">Choose an Option</option>
-                    <option value="admin">Admin Log In</option>
+                    <option value="admin">Admin Login</option>
                     <option value="reservations">Reserve a Seat</option>
                 </select>
                 <button type="submit">Submit</button>

@@ -2,11 +2,87 @@
 
 {% block content %}
     <div class="page">
-        <h1 class="item">{% block title %} Administrator Login {% endblock %}</h1>
         
-        <div class="item">
-            {% if err %}
-                <p>{{ err }}</p>
+        <h1 class="item">{% block title %}{% if reservations %}Admin Dashboard{% else %}Administrator Login{% endif %}{% endblock %}</h1>
+        
+        {% if err %}
+            <p>{{ err }}</p>
+        {% endif %}
+
+            {% if reservations %}
+
+                
+                <div class="item">
+                    
+                    <h2 style="text-align:center;">Seating Chart</h2>
+                    <p style="text-align:center;"><strong>X = Reserved Seat : O = Available Seat</strong></p>
+
+                    <div class="seating-chart">
+                        {% for row in seating_chart_matrix %}
+                            <div class="seat-row">[{% for seat in row %}'{{ seat }}'{% if not loop.last %}, {% endif %}{% endfor %}]</div>
+                        {% endfor %}
+                    </div>           
+
+                    <h3 style="text-align:center; background-color: #ddd; padding: 10px; border-radius: 5px;">Total Sales: ${{ "%.2f"|format(total_sales) }}</h3>
+
+                </div>
+                
+                <div class="item">
+                    <h2 style="text-align:center;">Reservations List</h2>
+                    {% if reservations %}
+                        <table border="1" cellpadding="6" style="border-collapse: collapse; width: 100%; background-color: #ddd;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Passenger</th>
+                                    <th>Row</th>
+                                    <th>Seat</th>
+                                    <th>Ticket Confirmation</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for res in reservations %}
+                                <tr>
+                                    <td>{{ res.id }}</td>
+                                    <td>{{ res.passengerName }}</td>
+                                    <td>{{ res.seatRow + 1 }}</td>
+                                    <td>{{ res.seatColumn + 1 }}</td>
+                                    <td>{{ res.eTicketNumber }}</td>
+                                    <td>
+                                        <form method="POST" onsubmit="return confirm('Delete this reservation?');" action="{{ url_for('main.admin') }}">
+                                            {{ delete_form.hidden_tag() }}
+                                            <input type="hidden" name="delete_id" value="{{ res.id }}">
+                                            <button type="submit" style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer;">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>No reservations yet.</p>
+                    {% endif %}
+                </div>
+
+            <style>
+                .seating-chart {
+                    display: inline-block;
+                    background-color: #d3d3d3;
+                    border-radius: 12px;
+                    padding: 12px 18px;
+                    font-family: monospace;
+                    font-weight: bold;
+                    font-size: 1.1em;
+                    margin-bottom: 16px;
+                }
+                .seat-row { 
+                    line-height: 1.5; 
+                }
+            </style>
+        
             {% endif %}
 
             <form method="POST" action="{{ url_for('main.admin') }}">
@@ -37,7 +113,7 @@
                 </div>
                 
             </form>
-        </div>
-    </div>
+        
+    </div><!-- end page -->
 
 {% endblock %}

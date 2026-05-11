@@ -3,7 +3,8 @@ from wtforms import (
     StringField,
     PasswordField,
     SelectField,
-    SubmitField
+    SubmitField,
+    HiddenField
 )
 from wtforms.validators import DataRequired
 
@@ -37,3 +38,7 @@ class ReservationForm(FlaskForm):
     )
 
     submit = SubmitField("Submit")
+
+class DeleteForm(FlaskForm):
+
+    submit = SubmitField("Delete")
