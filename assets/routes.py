@@ -43,16 +43,25 @@ def admin():
         print(f"{e}")
         return redirect(url_for('main.index'))
     
-@main_bp.route('/dashboard')
+@main_bp.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
+    if request.method == "POST":
+        delete_id = request.form.get("delete_id")
+
+        if delete_id:
+            databaseFunctions.delete_reservation(delete_id)
+            flash("Reservation deleted")
+            return redirect(url_for('main.dashboard'))
+        
     reservations = databaseFunctions.get_reservations()
     seating_chart_matrix = _build_chart()
-    total_sales = len(reservations) * 50 
-    return render_template('dashboard.html', 
-                           reservations=reservations,
-                           seating_chart_matrix=seating_chart_matrix,
-                           total_sales=total_sales
-                           )
+    total_sales = get_sales()
+    return render_template(
+        'dashboard.html',
+        reservations=reservations,
+        seating_chart_matrix=seating_chart_matrix,
+        total_sales=total_sales
+        )
 
 def _build_chart():
     taken = {(r["seatRow"], r["seatColumn"]) for r in databaseFunctions.get_seats_taken()}

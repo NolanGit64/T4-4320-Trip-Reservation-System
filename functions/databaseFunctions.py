@@ -66,6 +66,14 @@ def add_reservation(passenger_name, row, column, eticket):
     )
     db.commit()
 
+def delete_reservation(reservation_id):
+    db = get_db()
+    db.execute(
+        "DELETE FROM reservations WHERE id = ?",
+        (reservation_id,)
+    )
+    db.commit()
+
 def validate_admin(username, password):
     db = get_db()
     admin = db.execute(
