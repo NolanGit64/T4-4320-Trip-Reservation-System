@@ -39,8 +39,8 @@
                     <tr>
                         <td>{{ res.id }}</td>
                         <td>{{ res.passengerName }}</td>
-                        <td>{{ res.seatRow }}</td>
-                        <td>{{ res.seatColumn }}</td>
+                        <td>{{ res.seatRow + 1 }}</td>
+                        <td>{{ res.seatColumn + 1 }}</td>
                         <td>{{ res.eTicketNumber }}</td>
                         <td>
                             <form method="POST" onsubmit="return confirm('Delete this reservation?');">

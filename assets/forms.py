@@ -26,13 +26,13 @@ class ReservationForm(FlaskForm):
 
     row = SelectField(
         "Choose a Row:",
-        choices=[("", "Choose a Row")] + [(str(r), str(r)) for r in range(ROWS)],
+        choices=[("", "Choose a Row")] + [(str(r), str(r + 1)) for r in range(ROWS)],
         validators=[DataRequired()],
     )
 
     column = SelectField(
         "Choose a Seat:",
-        choices=[("", "Choose a Seat")] + [(str(c), str(c)) for c in range(COLUMNS)],
+        choices=[("", "Choose a Seat")] + [(str(c), str(c + 1)) for c in range(COLUMNS)],
         validators=[DataRequired()],
     )
 

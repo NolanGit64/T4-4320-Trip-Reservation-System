@@ -1,4 +1,3 @@
-import uuid
 from flask import current_app as app
 from flask import Flask, render_template, Blueprint, request, redirect, url_for, flash
 from .forms import *
@@ -50,7 +49,7 @@ def dashboard():
 
         if delete_id:
             databaseFunctions.delete_reservation(delete_id)
-            flash("Reservation deleted")
+            flash(f"Reservation {delete_id} deleted.")
             return redirect(url_for('main.dashboard'))
         
     reservations = databaseFunctions.get_reservations()
@@ -93,16 +92,16 @@ def reservations():
     form = ReservationForm()
 
     if form.validate_on_submit():
-        row = int(form.row.data)
+        row = int(form.row.data) 
         column = int(form.column.data)
-        passenger_name = f"{form.first_name.data} {form.last_name.data}"
+        passenger_name = f"{form.first_name.data}"
 
         if databaseFunctions.is_seat_taken(row, column):
-            flash(f"Seat (row {row}, seat {column}) is already taken. Choose another.")
+            flash(f"Seat (row {row + 1}, seat {column + 1}) is already taken. Choose another.")
         else:
             eticket = generate_ticket(form.first_name.data, "INFOTC4320")
             databaseFunctions.add_reservation(passenger_name, row, column, eticket)
-            flash(f"Reservation confirmed for {passenger_name}. E-Ticket: {eticket}")
+            flash(f"Congratulations {passenger_name}! Row {row + 1}, Seat {column + 1}, is now reserved for you. Enjoy your trip!\nE-Ticket: {eticket}")
             return redirect(url_for('main.reservations'))
 
     chart = _build_chart()
