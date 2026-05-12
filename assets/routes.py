@@ -53,7 +53,7 @@ def admin():
 
     except Exception as e:
         flash("ERROR: unexpected login failure")
-        flash(f"{e}")
+        print(f"{e}")
         return redirect(url_for('main.index'))
 
 def _build_chart():
